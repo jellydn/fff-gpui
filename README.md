@@ -131,6 +131,31 @@ fff-gpui --open <path>
 ```
 
 The daemon has a memory footprint of ~150mb idle and ~400mb when actively searching. Most of the reported usage in tools like btop is macOS page reservation and will be reclaimed under memory pressure. Report issues if you experience sustained growth beyond these baselines.
+
+### Unix socket integrations
+
+The daemon accepts newline-delimited JSON at
+`~/.local/state/fff-gpui/fff-gpui.sock`. Use `open_path` to open a directory.
+The optional `query` string pre-fills the search bar and starts the search when
+the file index is ready:
+
+```json
+{"cmd":"open_path","path":"/my/project","in_grep":false,"query":"**/*.{ts,tsx} git:modified"}
+```
+
+```json
+{"cmd":"open_path","path":"/my/project","in_grep":true,"query":"TODO"}
+```
+
+`in_grep` defaults to `false`. Grep opens in plain-text mode; `query` does not
+change the grep matching mode. If `query` is absent, the existing behavior is
+unchanged: a new window starts with an empty search bar. An explicit empty
+string clears the initial query. A request with `query` replaces an existing
+picker window even when it targets the same directory. The query applies only
+to that request, not to later launches from the global keybind.
+
+Keep the connection open to receive the existing `PickResponse` JSON line when
+the user selects a result or dismisses the picker.
 </details>
 
 <details>
