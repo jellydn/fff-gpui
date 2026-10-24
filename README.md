@@ -55,6 +55,35 @@ cargo build --release
 The binary will be at `target/release/fff-gpui`. You can move it anywhere on your `$PATH` or reference it directly in your config.
 
 Having trouble building? Check Zed's [macOS troubleshooting guide](https://zed.dev/docs/development/macos#troubleshooting) — the build requirements are the same.
+
+### Test a pull request build
+
+Pull requests run **macOS Test Build**, which tests and builds release binaries
+for Apple Silicon (`arm64`) and Intel (`x86_64`). Open the workflow run from the
+PR's checks and download the artifact for your Mac. Artifacts expire after seven
+days and require a GitHub login to download. The workflow also supports manual
+runs from the Actions tab once it is on the default branch.
+
+Unzip the Actions download, then extract its `.tar.gz` archive. The archive
+preserves executable permissions and includes `BUILD.txt` with the tested commit,
+target, and workflow run. PR builds test the merge commit, not just the branch tip.
+
+```sh
+tar -xzf fff-gpui-macos-*.tar.gz
+./fff-gpui --version
+./fff-gpui --open /path/to/project
+```
+
+Stop any existing fff-gpui daemon before testing so requests do not go to the
+installed version. For Homebrew, use `brew services stop fff-gpui`. To test the
+[Unix socket integration](#unix-socket-integrations), run `./fff-gpui` without
+`--open` to start the test daemon, then send the documented requests. Quit the
+test daemon and restore your normal service when finished.
+
+These builds are ad-hoc signed, but not notarized. If macOS blocks the binary,
+review the PR's source before using **System Settings → Privacy & Security →
+Open Anyway**. Test builds do not publish a release or replace your installed
+binary.
 </details>
 
 <details>
